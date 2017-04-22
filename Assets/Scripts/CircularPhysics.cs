@@ -6,10 +6,15 @@ public class CircularPhysics : MonoBehaviour {
 
 
     public float gravitySpeed;
+    public Transform gravityCenter;
+    private Rigidbody2D rb;
+    public bool gravityOn = true;
 
-    public List<Rigidbody2D> physicsObjects = new List<Rigidbody2D>();
 
-
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     private void Update()
     {
@@ -18,15 +23,8 @@ public class CircularPhysics : MonoBehaviour {
 
     void Physics()
     {
-        foreach(Rigidbody2D rb in physicsObjects)
-        {
-            rb.velocity = transform.position - rb.transform.position * gravitySpeed * Time.deltaTime;
-        }
-    }
-
-    public void RegisterRigidbody(Rigidbody2D rigidBody)
-    {
-        physicsObjects.Add(rigidBody);
+        if(gravityOn)
+            rb.velocity = gravityCenter.position - transform.position * gravitySpeed * Time.deltaTime;
     }
 
 }

@@ -496,15 +496,18 @@ MonoBehaviour:
   VerticalAxis: Vertical
   grounded: 0
   gravityPoint: {fileID: 954961684}
-  gravity: 30
+  gravity: 20
   jumping: 0
   affectedBy:
     serializedVersion: 2
     m_Bits: 4294967291
-  walkSpeed: 500
+  walkSpeed: 100
   jumpSpeed: 250
   jumpTime: 0.25
-  skinWidth: 0.05
+  skinWidth: 0.03
+  rotationDamping: 50
+  drag: 5
+  maxVelocity: {x: 7, y: 7}
 --- !u!50 &1214867863
 Rigidbody2D:
   serializedVersion: 4
@@ -514,11 +517,11 @@ Rigidbody2D:
   m_GameObject: {fileID: 1214867861}
   m_BodyType: 0
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0

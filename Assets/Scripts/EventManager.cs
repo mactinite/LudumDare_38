@@ -18,6 +18,7 @@ public class EventManager : MonoBehaviour {
 		events = new List<string> ();
 		this.getEvents ().Add ("tornado");
 		this.getEvents ().Add ("lightning");
+		this.getEvents ().Add ("asteroid");
 	}
 	
 	// Update is called once per frame

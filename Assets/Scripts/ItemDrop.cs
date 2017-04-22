@@ -16,7 +16,7 @@ public class ItemDrop : MonoBehaviour {
     public List<Items> DropList = new List<Items>();
     public bool isCrateDestroyed = false;
 
-    void dropLoot()
+    public void dropLoot()
     {
         if(isCrateDestroyed)
         {
@@ -47,6 +47,6 @@ public class ItemDrop : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        this.dropLoot();	
 	}
 }

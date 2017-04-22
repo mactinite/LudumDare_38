@@ -4,6 +4,7 @@ using UnityEngine;
 
 
 public class EventManager : MonoBehaviour {
+	private float waitTime = 0f;
 
 	private List<string> events;
 	private string randoEvent;
@@ -12,6 +13,8 @@ public class EventManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		
+
 		events = new List<string> ();
 		this.getEvents ().Add ("tornado");
 		this.getEvents ().Add ("lightning");
@@ -19,11 +22,14 @@ public class EventManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		int chosenEvent = Random.Range (0, this.getEvents ().Count);
-		this.getRandoEvent = this.getEvents () [chosenEvent];
+		if (Time.time < this.waitTime && this.waitTime != 0.0f) {
+			int chosenEvent = Random.Range (0, this.getEvents ().Count);
+			this.getRandoEvent = this.getEvents () [chosenEvent];
 
-		float randDegrees = Random.Range (0.0f, 360.0f);
-		this.getRandoPos () = this.getUnitOnCircle (randDegrees, this.getPlanetRadius ());
+			float randDegrees = Random.Range (0.0f, 360.0f);
+			this.getRandoPos () = this.getUnitOnCircle (randDegrees, this.getPlanetRadius ());
+			this.waitTime = 0.0f;
+		}
 
 
 
@@ -43,6 +49,15 @@ public class EventManager : MonoBehaviour {
 
 		return result;
 	}
+
+	private void randomizeWaitTime()
+	{
+		const float minimumWaitTime = 20.0f;
+		const float maximumWaitTime = 100.0f;
+		this.waitTime = Time.time + Random.Range(minimumWaitTime, maximumWaitTime);
+	}
+
+
 
 	public List<string> getEvents() {
 		return this.events;

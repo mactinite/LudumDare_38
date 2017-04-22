@@ -22,23 +22,23 @@ public class EventManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Time.time < this.waitTime && this.waitTime != 0.0f) {
+		if (Time.time < this.getWaitTime() && this.getWaitTime() != 0.0f) {
 			int chosenEvent = Random.Range (0, this.getEvents ().Count);
-			this.getRandoEvent = this.getEvents () [chosenEvent];
+			this.setRandoEvent(this.getEvents () [chosenEvent]);
 
 			float randDegrees = Random.Range (0.0f, 360.0f);
-			this.getRandoPos () = this.getUnitOnCircle (randDegrees, this.getPlanetRadius ());
-			this.waitTime = 0.0f;
+			this.setRandoPos (this.getUnitOnCircle (randDegrees, this.getPlanetRadius ()));
+			this.setWaitTime(0.0f);
 		}
 
 
 
 	}
 
-	private Vector2 getUnitOnCircle(float angleDegrees, float radius) {
-		float x = 0;
-		float y = 0;
-		float angleRadians = 0;
+	public Vector2 getUnitOnCircle(float angleDegrees, float radius) {
+		float x = 0.0f;
+		float y = 0.0f;
+		float angleRadians = 0.0f;
 		Vector2 result;
 
 		angleRadians = angleDegrees * Mathf.PI / 180.0f;
@@ -50,11 +50,11 @@ public class EventManager : MonoBehaviour {
 		return result;
 	}
 
-	private void randomizeWaitTime()
+	public void randomizeWaitTime()
 	{
 		const float minimumWaitTime = 20.0f;
 		const float maximumWaitTime = 100.0f;
-		this.waitTime = Time.time + Random.Range(minimumWaitTime, maximumWaitTime);
+		this.setWaitTime(Time.time + Random.Range(minimumWaitTime, maximumWaitTime));
 	}
 
 
@@ -67,16 +67,33 @@ public class EventManager : MonoBehaviour {
 		return this.randoEvent;
 	}
 
+	public void setRandoEvent(string pRandoEvent) {
+		this.randoEvent = pRandoEvent;
+	}
+
 	public Vector2 getRandoPos() {
 		return this.randoPos;
 	}
+
+	public void setRandoPos(Vector2 pRandoPos) {
+		this.randoPos = pRandoPos;
+	}
+
 
 	public void setPlanetRadius(float pPlanetRadius) {
 		this.planetRadius = pPlanetRadius;
 	}
 
-	public Vector2 getPlanetRadius() {
+	public float getPlanetRadius() {
 		return this.planetRadius;
+	}
+
+	public void setWaitTime(float pWaitTime) {
+		this.waitTime = pWaitTime;
+	}
+
+	public float getWaitTime() {
+		return this.waitTime;
 	}
 
 }

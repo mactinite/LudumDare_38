@@ -8,6 +8,7 @@ public class ItemManager : EventManager{
 
 	// Use this for initialization
 	void Start () {
+		
 		items = new List<string> ();
 		items.Add ("iron_boots");
 		items.Add ("hammer");
@@ -16,6 +17,7 @@ public class ItemManager : EventManager{
 	
 	// Update is called once per frame
 	void Update () {
+		this.randomizeWaitTime ();
 		if (Time.time < this.getWaitTime() && this.getWaitTime() != 0.0f) {
 			int chosenItem = Random.Range (0, this.getItems ().Count);
 			this.setRandoItem(this.getItems () [chosenItem]);

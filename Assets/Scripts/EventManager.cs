@@ -23,6 +23,7 @@ public class EventManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		this.randomizeWaitTime ();
 		if (Time.time < this.getWaitTime() && this.getWaitTime() != 0.0f) {
 			int chosenEvent = Random.Range (0, this.getEvents ().Count);
 			this.setRandoEvent(this.getEvents () [chosenEvent]);

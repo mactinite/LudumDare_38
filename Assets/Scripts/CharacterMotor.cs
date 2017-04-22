@@ -12,7 +12,7 @@ public class CharacterMotor : MonoBehaviour {
     public bool grounded;
 
     private Rigidbody2D rb;
-    private Vector2 velocity;
+    private Vector2 acceleration;
     public Transform gravityPoint;
     public float gravity = 40f;
     public bool jumping;
@@ -25,8 +25,13 @@ public class CharacterMotor : MonoBehaviour {
     [Range(0,1)]
     public float skinWidth = 0.1f;
     public float rotationDamping = 15f;
+    public float drag = 5f;
 
 
+    public Vector2 maxVelocity;
+    
+
+    private Vector2 velocity;
 
     // Use this for initialization
     void Start () {
@@ -39,10 +44,63 @@ public class CharacterMotor : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-        velocity = Vector2.zero;
-        velocity.x = Input.GetAxis(HorizontalAxis) * walkSpeed * Time.fixedDeltaTime;
-        velocity.y = -(gravity * Time.fixedDeltaTime);
+        Gravity();
+        //reset acceleration every frame
+        acceleration = Vector2.zero;
+
+        acceleration.x = Input.GetAxis(HorizontalAxis) * walkSpeed;
+
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.FromToRotation(Vector3.up, transform.position - gravityPoint.position), Time.fixedDeltaTime * rotationDamping);
+        
+
+
+
+        if (grounded)
+        {
+            jumping = false;
+            jumpTimer = jumpTime;
+        }
+
+        if(Input.GetButtonDown("Jump") && grounded)
+        {
+            jumping = true;
+            acceleration.y = jumpSpeed;
+        }
+        CalculateDrag();
+
+        velocity += acceleration * Time.fixedDeltaTime;
+
+        if(velocity.x > maxVelocity.x)
+        {
+            velocity.x = maxVelocity.x;
+        }
+        else if(velocity.x < -maxVelocity.x)
+        {
+            velocity.x = -maxVelocity.x;
+        }
+
+
+        if (velocity.y > maxVelocity.y)
+        {
+            velocity.y = maxVelocity.y;
+        }
+        else if (velocity.y < -maxVelocity.y)
+        {
+            velocity.y = -maxVelocity.y;
+        }
+
+
+        Debug.DrawRay(transform.position, transform.TransformDirection(velocity), Color.blue);
+        rb.velocity =  (transform.TransformDirection(velocity));
+
+	}
+
+
+
+
+
+    void Gravity()
+    {
 
         RaycastHit2D groundHit = Physics2D.Raycast(transform.position, -transform.up, 0.25f + skinWidth, affectedBy);
        
@@ -70,25 +128,26 @@ public class CharacterMotor : MonoBehaviour {
             grounded = false;
         }
 
-
+        //apply gravity if we are not touching the ground.
         if (!grounded)
+            velocity.y -= gravity * Time.deltaTime;
+        else
+            velocity.y = 0;
+    }
+
+
+    void CalculateDrag()
+    {
+        if (velocity.x > 0)
         {
-                
+            velocity.x -= Time.fixedDeltaTime * drag;
         }
         else
         {
-            jumping = false;
-            jumpTimer = jumpTime;
+            velocity.x += Time.fixedDeltaTime * drag;
+
         }
-
-        if(Input.GetButton("Jump") && grounded)
-        {
-            velocity.y = jumpSpeed;
-        }
-
-        rb.velocity =  (transform.TransformDirection(velocity));
-
-	}
+    }
 
 
     Vector2 getPerpendicularVector(Vector2 inVector)

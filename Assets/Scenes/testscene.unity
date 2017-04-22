@@ -258,9 +258,9 @@ GameObject:
   - component: {fileID: 939238909}
   - component: {fileID: 939238908}
   - component: {fileID: 939238912}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: box
-  m_TagString: Untagged
+  m_TagString: World
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -283,7 +283,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!61 &939238909
 BoxCollider2D:
@@ -356,12 +356,12 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 939238907}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.29, y: 4.23, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &939238912
 MonoBehaviour:
@@ -387,9 +387,9 @@ GameObject:
   - component: {fileID: 954961684}
   - component: {fileID: 954961683}
   - component: {fileID: 954961682}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Planet
-  m_TagString: Untagged
+  m_TagString: World
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -404,7 +404,7 @@ CircleCollider2D:
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_UsedByEffector: 0
+  m_UsedByEffector: 1
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
@@ -472,7 +472,6 @@ GameObject:
   - component: {fileID: 1214867865}
   - component: {fileID: 1214867863}
   - component: {fileID: 1214867862}
-  - component: {fileID: 1214867866}
   - component: {fileID: 1214867864}
   m_Layer: 2
   m_Name: player
@@ -492,13 +491,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2abbfe54af03b3b4db25537fdceb0169, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerNumber: 1
   HorizontalAxis: Horizontal
   VerticalAxis: Vertical
   grounded: 0
+  gravityPoint: {fileID: 954961684}
+  gravity: 30
+  jumping: 0
   affectedBy:
     serializedVersion: 2
-    m_Bits: 0
-  walkSpeed: 100
+    m_Bits: 4294967291
+  walkSpeed: 500
+  jumpSpeed: 250
+  jumpTime: 0.25
+  skinWidth: 0.05
 --- !u!50 &1214867863
 Rigidbody2D:
   serializedVersion: 4
@@ -508,7 +514,7 @@ Rigidbody2D:
   m_GameObject: {fileID: 1214867861}
   m_BodyType: 0
   m_Simulated: 1
-  m_UseFullKinematicContacts: 1
+  m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
@@ -517,7 +523,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!61 &1214867864
 BoxCollider2D:
@@ -528,7 +534,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -558,22 +564,8 @@ Transform:
   - {fileID: 212373146}
   - {fileID: 1766034366}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1214867866
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1214867861}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f890fc59e3298848ace1bf425d97668, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gravitySpeed: 30
-  gravityCenter: {fileID: 954961684}
-  gravityOn: 0
 --- !u!1 &1766034365
 GameObject:
   m_ObjectHideFlags: 0

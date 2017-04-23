@@ -13,7 +13,7 @@ public class CharacterMotor : MonoBehaviour
     public bool grounded;
 
     private Vector2 acceleration;
-    private Vector2 velocity;
+    public Vector2 velocity;
     public Transform gravityPoint;
     public float gravity = 40f;
     public bool jumping;
@@ -23,6 +23,9 @@ public class CharacterMotor : MonoBehaviour
     public float walkSpeed = 100f;
     public float jumpSpeed = 100f;
     public float friction = 0.5f;
+    public float drag = 0.5f;
+    public Vector2 maxVelocity;
+    public Vector2 minVelocity;
 
 
     private CharacterController2D cc;
@@ -38,7 +41,7 @@ public class CharacterMotor : MonoBehaviour
         acceleration = Vector2.zero;
         Vector2 planetNormal = transform.position - gravityPoint.position;
         planetNormal.Normalize();
-        acceleration.x = Input.GetAxis(HorizontalAxis) * walkSpeed;
+        acceleration.x = Input.GetAxisRaw(HorizontalAxis) * walkSpeed;
         if(Input.GetAxisRaw(HorizontalAxis) > 0f)
         {
             GetComponent<SpriteRenderer>().flipX = false;
@@ -52,24 +55,56 @@ public class CharacterMotor : MonoBehaviour
         transform.rotation = newRot;
 
         acceleration.y = -gravity;
-
-        if(Input.GetButtonDown("Jump") && cc.isGrounded)
-        {
-            acceleration.y = jumpSpeed;
-            jumping = true;
-        }
-
-        if(jumping && cc.isGrounded)
+        if (jumping && cc.isGrounded)
         {
             jumping = false;
         }
 
-        cc.Move(acceleration * Time.deltaTime);
+        if (Input.GetButtonDown("Jump") && cc.isGrounded)
+        {
+             acceleration.y = gravity + jumpSpeed;
+            jumping = true;
+        }
+
+
+
+        
+        velocity += acceleration;
+        velocity.x = Mathf.Clamp(velocity.x, minVelocity.x, maxVelocity.x);
+        velocity.y = Mathf.Clamp(velocity.y, minVelocity.y, maxVelocity.y);
+
+        if (velocity.x > 0.1f)
+        {
+            velocity.x -= friction * Time.deltaTime;
+        }
+        else if (velocity.x < -0.1f)
+        {
+            velocity.x += friction * Time.deltaTime;
+        }
+        else
+        {
+            velocity.x = 0;
+        }
+
+        if (velocity.y > Mathf.Epsilon)
+        {
+            velocity.y -= drag * Time.deltaTime;
+        }
+        else if (velocity.y < -Mathf.Epsilon)
+        {
+            velocity.y += drag * Time.deltaTime;
+        }
+        else
+        {
+            velocity.y = 0;
+        }
+
+        cc.Move(velocity * Time.deltaTime);
     }
 
     public void AddForce(Vector2 forceDirection)
     {
-        //TODO: This method
+        velocity += forceDirection;
     }
 
 

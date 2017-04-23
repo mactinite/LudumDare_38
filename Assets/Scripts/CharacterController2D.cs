@@ -81,12 +81,9 @@ public class CharacterController2D : MonoBehaviour {
     public void MoveVertically(ref Vector2 delta)
     {
         bool isMovingUp = delta.y > 0;
-        Debug.Log(isMovingUp);
         Vector2[] rayPositions = isMovingUp ? upRayPositions : downRayPositions;
         float rayDistance = Mathf.Abs(delta.y) + skinWidth;
         Vector2 rayDirection = isMovingUp ? transform.up : -transform.up;
-
-        
 
 
         foreach (Vector2 pos in rayPositions)
@@ -100,9 +97,6 @@ public class CharacterController2D : MonoBehaviour {
             {
                 
                 delta.y = transform.InverseTransformPoint(raycastHit.point).y - pos.y;
-                Debug.Log("delta.y " + delta.y);
-                rayDistance = Mathf.Abs(delta.y);
-
 
                 if (isMovingUp)
                 {
@@ -268,7 +262,7 @@ public class CharacterController2D : MonoBehaviour {
 
 		// next, check movement in the vertical dir
 		if(delta.y != 0f )
-			MoveVertically( ref delta);
+            MoveVertically( ref delta);
 
 		// move then update our state
 		transform.Translate(delta);

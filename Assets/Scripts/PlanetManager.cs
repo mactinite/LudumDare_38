@@ -16,8 +16,6 @@ public class PlanetManager : MonoBehaviour {
 	public float minGravity;
 	public float gravityDecayInterval;
 
-	private EventManager eventManager;
-	private ItemManager itemManager;
 
 	// Use this for initialization
 	void Start () {
@@ -32,8 +30,6 @@ public class PlanetManager : MonoBehaviour {
 		currGravity = maxGravity;
 		gravityDecayInterval = 0.5f;
 
-		eventManager = new EventManager ();
-		itemManager = new ItemManager ();
 	}
 	
 	// Update is called once per frame
@@ -48,13 +44,6 @@ public class PlanetManager : MonoBehaviour {
 			}
 		}
 	}
-
-	public EventManager getEventManager() {
-		return this.eventManager;
-	}
-
-	public ItemManager getItemManager() {
-		return this.itemManager;
-	}
+		
 
 }

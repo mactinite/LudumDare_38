@@ -7,6 +7,9 @@ public class PlayerAnimation : MonoBehaviour {
     private CharacterController2D cc;
     private CharacterMotor cm;
     private Animator anim;
+    private SpriteRenderer sr;
+
+    public ParticleSystem groundParticles;
 
     public float runSpeedMultiplier = 2;
 
@@ -15,6 +18,7 @@ public class PlayerAnimation : MonoBehaviour {
         cc = GetComponent<CharacterController2D>();
         cm = GetComponent<CharacterMotor>();
         anim = GetComponent<Animator>();
+        sr = GetComponent<SpriteRenderer>();
     }
 
     private void Update()
@@ -25,12 +29,14 @@ public class PlayerAnimation : MonoBehaviour {
         if (Input.GetAxisRaw(cm.HorizontalAxis) > 0.01f)
         {
             anim.SetBool("Running", true);
-            anim.speed = (Mathf.Abs(cm.velocity.x) / cm.maxVelocity.x) *runSpeedMultiplier;
+            sr.flipX = false;
+            //anim.speed = (Mathf.Abs(cm.velocity.x) / cm.maxVelocity.x) *runSpeedMultiplier;
         }
         else if (Input.GetAxisRaw(cm.HorizontalAxis) < -0.01f)
         {
             anim.SetBool("Running", true);
-            anim.speed = (Mathf.Abs(cm.velocity.x) / cm.maxVelocity.x) * runSpeedMultiplier;
+            sr.flipX = true;
+            //anim.speed = (Mathf.Abs(cm.velocity.x) / cm.maxVelocity.x) * runSpeedMultiplier;
         }
         else
         {
@@ -39,6 +45,12 @@ public class PlayerAnimation : MonoBehaviour {
         }
 
         anim.SetBool("Grounded", cc.isGrounded);
+
+
+        if (cc.isGrounded)
+            groundParticles.Play();
+        else
+            groundParticles.Stop();
 
         if (cm.jumping)
         {

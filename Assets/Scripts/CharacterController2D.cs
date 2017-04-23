@@ -57,17 +57,17 @@ public class CharacterController2D : MonoBehaviour {
         rightRayPositions = new Vector2[horizontalRays];
         upRayPositions = new Vector2[verticalRays];
         float bottomWidth = rightMin.x - leftMin.x;
-        float bottomIncrement = bottomWidth / verticalRays;
+        float bottomIncrement = bottomWidth / (verticalRays - 1);
         for (int i = 0; i < verticalRays; i++)
         {
             Vector2 offset = new Vector2(leftMin.x + (bottomIncrement * i), leftMin.y);
-            Vector2 offsetTop = new Vector2(leftMax.x + (bottomIncrement * i), leftMax.y);
+            Vector2 offsetTop = new Vector2(leftMax.x + (bottomIncrement * i), rightMax.y);
             downRayPositions[i] = offset;
             upRayPositions[i] = offsetTop;
         }
 
         float sideHeight = rightMax.y - rightMin.y;
-        float sideIncrement = sideHeight / horizontalRays;
+        float sideIncrement = sideHeight / (horizontalRays -1 );
         for (int i = 0; i < horizontalRays; i++)
         {
             Vector2 offsetLeft = new Vector2(leftMin.x, leftMin.y + (sideIncrement * i));
@@ -84,12 +84,14 @@ public class CharacterController2D : MonoBehaviour {
         Vector2[] rayPositions = isMovingUp ? upRayPositions : downRayPositions;
         float rayDistance = Mathf.Abs(delta.y) + skinWidth;
         Vector2 rayDirection = isMovingUp ? transform.up : -transform.up;
-
+        
 
         foreach (Vector2 pos in rayPositions)
         {
-            Vector2 rayPosition = transform.TransformPoint(pos);
+            Vector2 rayPosition = pos;
             rayPosition.x += delta.x;
+            rayPosition = transform.TransformPoint(rayPosition);
+            
             Debug.DrawRay(rayPosition, rayDirection * (rayDistance), Color.green);
             raycastHit = Physics2D.Raycast(transform.TransformPoint(pos), rayDirection, rayDistance, platformMask);
 
@@ -127,19 +129,20 @@ public class CharacterController2D : MonoBehaviour {
     private void HandleVerticalSlope(ref Vector2 delta)
     {
         // slope check from the center of our collider
-        var centerOfCollider = (leftRayPositions[0].x + rightRayPositions[0].x) * 0.5f;
-        var rayDirection = -Vector2.up;
+        float centerOfCollider = (leftRayPositions[0].x + rightRayPositions[0].x) * 0.5f;
+        var rayDirection = -transform.up;
 
         // the ray distance is based on our slopeLimit
         var slopeCheckRayDistance = slopeLimitTangent * (rightRayPositions[0].x - centerOfCollider);
 
         var slopeRay = new Vector2(centerOfCollider, leftRayPositions[0].y);
+        slopeRay = transform.TransformPoint(slopeRay);
         Debug.DrawRay(slopeRay, rayDirection * slopeCheckRayDistance, Color.yellow);
         raycastHit = Physics2D.Raycast(slopeRay, rayDirection, slopeCheckRayDistance, platformMask);
         if (raycastHit)
         {
             // bail out if we have no slope
-            var angle = Vector2.Angle(raycastHit.normal, Vector2.up);
+            var angle = Vector2.Angle(raycastHit.normal, transform.up);
             if (angle == 0)
                 return;
 
@@ -165,14 +168,22 @@ public class CharacterController2D : MonoBehaviour {
         Vector2[] rayPositions = isMovingRight ? rightRayPositions : leftRayPositions;
         float rayDistance = Mathf.Abs(delta.x) + skinWidth;
         Vector2 rayDirection = isMovingRight ? transform.right : -transform.right;
+        int i = 0;
         foreach (Vector2 pos in rayPositions)
         {
-
+            
             raycastHit = Physics2D.Raycast(transform.TransformPoint(pos), rayDirection, rayDistance, platformMask);      
             Debug.DrawRay(transform.TransformPoint(pos), rayDirection * (rayDistance), Color.green);
 
             if (raycastHit)
             {
+
+                if (i == 0 && HandleHorizontalSlope(ref delta, Vector2.Angle(raycastHit.normal, transform.up)))
+                {
+                    
+                    break;
+                }
+
                 delta.x = raycastHit.point.x - transform.TransformPoint(pos).x;
                 rayDistance = Mathf.Abs(delta.x);
 
@@ -191,16 +202,19 @@ public class CharacterController2D : MonoBehaviour {
                     break;
 
             }
+            i++;
 
         }
 
     }
 
-    bool HandleHorizontalSlope(ref Vector3 delta, float angle)
+    bool HandleHorizontalSlope(ref Vector2 delta, float angle)
     {
         // disregard 90 degree angles (walls)
         if (Mathf.RoundToInt(angle) == 90)
             return false;
+
+        Debug.Log(angle);
 
         // if we can walk on slopes and our angle is small enough we need to move up
         if (angle < slopeLimit)
@@ -222,8 +236,9 @@ public class CharacterController2D : MonoBehaviour {
                 // safety check. we fire a ray in the direction of movement just in case the diagonal we calculated above ends up
                 // going through a wall. if the ray hits, we back off the horizontal movement to stay in bounds.
                 Vector2 rayPosition = isGoingRight ? rightRayPositions[0] : leftRayPositions[0];
+                rayPosition = transform.TransformPoint(rayPosition);
                 raycastHit = Physics2D.Raycast(rayPosition, delta.normalized, delta.magnitude, platformMask);
-
+                Debug.DrawRay(rayPosition, delta.normalized * (delta.magnitude), Color.blue);
                 if (raycastHit)
                 {
                     // we crossed an edge when using Pythagoras calculation, so we set the actual delta movement to the ray hit location
@@ -246,12 +261,46 @@ public class CharacterController2D : MonoBehaviour {
         return true;
     }
 
+
+    public void CheckGround(ref Vector2 delta)
+    {
+
+        Vector2[] rayPositions = downRayPositions;
+        float rayDistance = skinWidth;
+        Vector2 rayDirection = -transform.up;
+
+        foreach (Vector2 pos in rayPositions)
+        {
+            Vector2 rayPosition = pos;
+            rayPosition.x += delta.x;
+            rayPosition = transform.TransformPoint(rayPosition);
+            Debug.DrawRay(rayPosition, rayDirection * (rayDistance), Color.blue);
+            raycastHit = Physics2D.Raycast(transform.TransformPoint(pos), rayDirection, rayDistance, platformMask);
+
+            if (raycastHit)
+            {
+                isGrounded = true;
+            }
+            else
+            {
+                isGrounded = false;
+            }
+
+        }
+
+
+    }
+
     public void Move( Vector2 delta)
 	{
         movementDelta = delta;
         
         wasGroundedLastFrame = isGrounded;
+        isGrounded = false;
+        becameGroundedThisFrame = false;
         UpdateRayPositions();
+
+        CheckGround(ref delta);
 
         if (delta.y < 0f && wasGroundedLastFrame)
             HandleVerticalSlope(ref delta);
@@ -264,12 +313,14 @@ public class CharacterController2D : MonoBehaviour {
 		if(delta.y != 0f )
             MoveVertically( ref delta);
 
+        
+
 		// move then update our state
 		transform.Translate(delta);
 
 		// only calculate velocity if we have a non-zero deltaTime
 		if( Time.deltaTime > 0f )
-			velocity = transform.InverseTransformDirection(delta) / Time.deltaTime;
+			velocity = delta / Time.deltaTime;
 
         if (!wasGroundedLastFrame && isGrounded)
             becameGroundedThisFrame = true;

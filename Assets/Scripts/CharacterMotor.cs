@@ -4,118 +4,110 @@ using UnityEngine;
 
 public class CharacterMotor : MonoBehaviour
 {
+    // movement config
+    public float gravity = -25f;
+    public float runSpeed = 8f;
+    public float groundDamping = 20f; // how fast do we change direction? higher means faster
+    public float inAirDamping = 5f;
+    public float jumpForce = 3f;
 
-    public int playerNumber = 1;
+    [HideInInspector]
+    private float normalizedHorizontalSpeed = 0;
+
+    private CharacterController2D _controller;
+    private Animator _animator;
+    private RaycastHit2D _lastControllerColliderHit;
+    public Vector2 velocity;
+    private Vector2 acceleration;
+    public Transform gravityPoint;
+    public float rotationDamping = 10f;
+    public float friction = 5;
+
 
     public string HorizontalAxis = "Horizontal";
     public string VerticalAxis = "Vertical";
-
-    public bool grounded;
-
-    private Vector2 acceleration;
-    public Vector2 velocity;
-    public Transform gravityPoint;
-    public float gravity = 40f;
     public bool jumping;
 
-
-    public LayerMask affectedBy;
-    public float walkSpeed = 100f;
-    public float jumpSpeed = 100f;
-    public float friction = 0.5f;
-    public float drag = 0.5f;
     public Vector2 maxVelocity;
-    public Vector2 minVelocity;
+    bool isMoving = false;
 
 
-    private CharacterController2D cc;
-
-    // Use this for initialization
-    void Start()
+    void Awake()
     {
-        cc = GetComponent<CharacterController2D>();
+        _animator = GetComponent<Animator>();
+        _controller = GetComponent<CharacterController2D>();
     }
 
-    private void Update()
+
+    // the Update loop contains a very simple example of moving the character around and controlling the animation
+    void Update()
     {
-        acceleration = Vector2.zero;
+
+        if (_controller.isGrounded)
+        {
+            acceleration = Vector2.zero;
+            velocity.y = 0;
+        }
         Vector2 planetNormal = transform.position - gravityPoint.position;
         planetNormal.Normalize();
-        acceleration.x = Input.GetAxisRaw(HorizontalAxis) * walkSpeed;
-        if(Input.GetAxisRaw(HorizontalAxis) > 0f)
-        {
-            GetComponent<SpriteRenderer>().flipX = false;
-        }
-        else if(Input.GetAxisRaw(HorizontalAxis) < 0f)
-        {
-            GetComponent<SpriteRenderer>().flipX = true;
-        }
 
         Quaternion newRot = Quaternion.FromToRotation(transform.up, planetNormal) * transform.rotation;
-        transform.rotation = newRot;
+        transform.rotation = Quaternion.Slerp(transform.rotation, newRot, Time.deltaTime * rotationDamping);
 
-        acceleration.y = -gravity;
-        if (jumping && cc.isGrounded)
+
+        acceleration.x = Input.GetAxisRaw(HorizontalAxis) * runSpeed;
+        
+
+
+        if (velocity.x > maxVelocity.x)
+            velocity.x = maxVelocity.x;
+        else if (velocity.x < -maxVelocity.x)
+            velocity.x = -maxVelocity.x;
+
+        if (velocity.y > maxVelocity.y)
+            velocity.y = maxVelocity.y;
+        else if (velocity.y < -maxVelocity.y)
+            velocity.y = -maxVelocity.y;
+
+
+        // Friction and Drag
+        if (Mathf.Abs(Input.GetAxisRaw(HorizontalAxis)) < 0.001f)
+        {
+            if (velocity.x - (friction * Time.deltaTime) > 0)
+                velocity.x -= friction * Time.deltaTime;
+            else if (velocity.x + (friction * Time.deltaTime) < 0)
+                velocity.x += friction * Time.deltaTime;
+            else
+                velocity.x = 0;
+        }
+
+        if (jumping)
         {
             jumping = false;
         }
 
-        if (Input.GetButtonDown("Jump") && cc.isGrounded)
+        acceleration.y -= gravity * Time.deltaTime;
+
+        if (Input.GetButton("Jump") && _controller.isGrounded && !jumping)
         {
-             acceleration.y = gravity + jumpSpeed;
+            acceleration.y = Mathf.Sqrt(2f * jumpForce * gravity);
             jumping = true;
         }
 
-
+        if (_controller.isGrounded)
+        {
+            velocity.y -= gravity * Time.deltaTime;
+        }
 
         
-        velocity += acceleration;
-        velocity.x = Mathf.Clamp(velocity.x, minVelocity.x, maxVelocity.x);
-        velocity.y = Mathf.Clamp(velocity.y, minVelocity.y, maxVelocity.y);
 
-        if (velocity.x > 0.1f)
-        {
-            velocity.x -= friction * Time.deltaTime;
-        }
-        else if (velocity.x < -0.1f)
-        {
-            velocity.x += friction * Time.deltaTime;
-        }
-        else
-        {
-            velocity.x = 0;
-        }
 
-        if (velocity.y > Mathf.Epsilon)
-        {
-            velocity.y -= drag * Time.deltaTime;
-        }
-        else if (velocity.y < -Mathf.Epsilon)
-        {
-            velocity.y += drag * Time.deltaTime;
-        }
-        else
-        {
-            velocity.y = 0;
-        }
-
-        cc.Move(velocity * Time.deltaTime);
+        float dampingSpeed = _controller.isGrounded ? groundDamping : inAirDamping;
+        velocity.x = Mathf.Lerp(velocity.x, velocity.x + acceleration.x, Time.deltaTime * dampingSpeed);
+        velocity.y += acceleration.y;
+        
+        _controller.Move((velocity * Time.deltaTime));
+        velocity = _controller.velocity;
     }
-
-    public void AddForce(Vector2 forceDirection)
-    {
-        velocity += (Vector2)(transform.up * gravity) + forceDirection;
-    }
-
-    public void OnTriggerEnter2D(Collider2D collider)
-    {
-        if (collider.gameObject.CompareTag("Explosion"))
-        {
-            AddForce(transform.up * 35f);
-            Debug.DrawRay(collider.transform.position, transform.up  * 35f);
-        }
-    }
-
 
 }
-

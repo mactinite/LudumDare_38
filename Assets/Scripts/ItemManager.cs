@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemManager : EventManager{
-	public List<Transform> items = new List<Transform>();
+	public List<string> items = new List<string>();
 	private string randoItem;
 
 	// Use this for initialization

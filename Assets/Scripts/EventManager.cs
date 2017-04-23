@@ -6,7 +6,7 @@ using UnityEngine;
 public class EventManager : MonoBehaviour {
 	private float waitTime = 0f;
 
-	public List<Transform> events = new List<Transform>();
+	public List<string> events = new List<string>();
 	private string randoEvent;
 	private Vector2 randoPos;
 	private float planetRadius;

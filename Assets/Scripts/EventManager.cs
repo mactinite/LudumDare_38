@@ -3,29 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class EventManager : MonoBehaviour {
-	private float waitTime = 0f;
 
-	public List<string> events = new List<string>();
-	private string randoEvent;
+public class EventManager : MonoBehaviour {
+	public float waitTime = 0.0f;
+
+	public List<Transform> events = new List<Transform>();
+	private Transform randoEvent;
 	private Vector2 randoPos;
-	private float planetRadius;
+	public PlanetManager planetManager;
 
 	// Use this for initialization
 	void Start () {
 		
+		this.planetManager = GetComponent<PlanetManager> ();
+		this.randomizeWaitTime ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		this.randomizeWaitTime ();
-		if (Time.time > this.getWaitTime() && this.getWaitTime() != 0.0f) {
-			int chosenEvent = Random.Range (0, this.getEvents ().Count);
-			this.setRandoEvent(this.getEvents () [chosenEvent]);
-
+		
+		if (Time.time > this.waitTime && this.waitTime != 0.0f) {
+			int chosenEvent = Random.Range (0, this.events.Count);
+			if (this.events.Count != 0) {
+				this.randoEvent = this.events[chosenEvent];
+			}
 			float randDegrees = Random.Range (0.0f, 360.0f);
-			this.setRandoPos (this.getUnitOnCircle (randDegrees, this.getPlanetRadius ()));
-			this.setWaitTime(0.0f);
+			this.randoPos = this.getUnitOnCircle (randDegrees, this.planetManager.currRadius);
+			this.randomizeWaitTime ();
 		}
 			
 	}
@@ -47,48 +51,13 @@ public class EventManager : MonoBehaviour {
 
 	public void randomizeWaitTime()
 	{
-		const float minimumWaitTime = 20.0f;
-		const float maximumWaitTime = 100.0f;
-		this.setWaitTime(Time.time + Random.Range(minimumWaitTime, maximumWaitTime));
+		const float minimumWaitTime = 30.0f;
+		const float maximumWaitTime = 45.0f;
+		this.waitTime = Time.time + Random.Range(minimumWaitTime, maximumWaitTime);
 	}
 
 
 
-	public List<string> getEvents() {
-		return this.events;
-	}
 
-	public string  getRandoEvent() {
-		return this.randoEvent;
-	}
-
-	public void setRandoEvent(string pRandoEvent) {
-		this.randoEvent = pRandoEvent;
-	}
-
-	public Vector2 getRandoPos() {
-		return this.randoPos;
-	}
-
-	public void setRandoPos(Vector2 pRandoPos) {
-		this.randoPos = pRandoPos;
-	}
-
-
-	public void setPlanetRadius(float pPlanetRadius) {
-		this.planetRadius = pPlanetRadius;
-	}
-
-	public float getPlanetRadius() {
-		return this.planetRadius;
-	}
-
-	public void setWaitTime(float pWaitTime) {
-		this.waitTime = pWaitTime;
-	}
-
-	public float getWaitTime() {
-		return this.waitTime;
-	}
 
 }

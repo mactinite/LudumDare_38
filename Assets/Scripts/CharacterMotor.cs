@@ -159,10 +159,14 @@ public class CharacterMotor : MonoBehaviour {
         {
             velocity.x -= Time.fixedDeltaTime * drag;
         }
-        else
+        else if(velocity.x < 0)
         {
             velocity.x += Time.fixedDeltaTime * drag;
 
+        }
+        else
+        {
+            velocity.x = 0;
         }
     }
 

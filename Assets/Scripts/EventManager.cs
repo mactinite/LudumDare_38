@@ -6,7 +6,7 @@ using UnityEngine;
 public class EventManager : MonoBehaviour {
 	private float waitTime = 0f;
 
-	private List<string> events;
+	public List<Transform> events = new List<Transform>();
 	private string randoEvent;
 	private Vector2 randoPos;
 	private float planetRadius;
@@ -14,17 +14,12 @@ public class EventManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		
-
-		events = new List<string> ();
-		this.getEvents ().Add ("tornado");
-		this.getEvents ().Add ("lightning");
-		this.getEvents ().Add ("asteroid");
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		this.randomizeWaitTime ();
-		if (Time.time < this.getWaitTime() && this.getWaitTime() != 0.0f) {
+		if (Time.time > this.getWaitTime() && this.getWaitTime() != 0.0f) {
 			int chosenEvent = Random.Range (0, this.getEvents ().Count);
 			this.setRandoEvent(this.getEvents () [chosenEvent]);
 
@@ -32,9 +27,7 @@ public class EventManager : MonoBehaviour {
 			this.setRandoPos (this.getUnitOnCircle (randDegrees, this.getPlanetRadius ()));
 			this.setWaitTime(0.0f);
 		}
-
-
-
+			
 	}
 
 	public Vector2 getUnitOnCircle(float angleDegrees, float radius) {

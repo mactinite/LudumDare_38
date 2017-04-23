@@ -3,22 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemManager : EventManager{
-	private List<string> items;
+	public List<Transform> items = new List<Transform>();
 	private string randoItem;
 
 	// Use this for initialization
 	void Start () {
 		
-		items = new List<string> ();
-		items.Add ("iron_boots");
-		items.Add ("hammer");
-		items.Add ("jet_pack");
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		this.randomizeWaitTime ();
-		if (Time.time < this.getWaitTime() && this.getWaitTime() != 0.0f) {
+		if (Time.time > this.getWaitTime() && this.getWaitTime() != 0.0f) {
 			int chosenItem = Random.Range (0, this.getItems ().Count);
 			this.setRandoItem(this.getItems () [chosenItem]);
 

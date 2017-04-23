@@ -104,7 +104,16 @@ public class CharacterMotor : MonoBehaviour
 
     public void AddForce(Vector2 forceDirection)
     {
-        velocity += forceDirection;
+        velocity += (Vector2)(transform.up * gravity) + forceDirection;
+    }
+
+    public void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.gameObject.CompareTag("Explosion"))
+        {
+            AddForce(transform.up * 35f);
+            Debug.DrawRay(collider.transform.position, transform.up  * 35f);
+        }
     }
 
 

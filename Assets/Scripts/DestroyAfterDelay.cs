@@ -8,9 +8,17 @@ public class DestroyAfterDelay : MonoBehaviour {
 	void Start () {
         Destroy(gameObject, 0.1f);
 	}
-	
+
+    float timer;
 	// Update is called once per frame
 	void Update () {
-		
+
+        Vector2 transformScale;
+        transformScale = transform.localScale;
+        timer += Time.deltaTime;
+
+
+        transform.localScale *= 1 + timer; 
+
 	}
 }

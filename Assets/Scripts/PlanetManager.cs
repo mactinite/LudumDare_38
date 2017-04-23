@@ -4,31 +4,20 @@ using UnityEngine;
 
 public class PlanetManager : MonoBehaviour {
 
-	public float decayRate; 
-	private float nextDecay;
-
-	public float currRadius;
-	public float maxRadius;
-	public float minRadius;
-	public float radiusDecayInterval;
-	public float currGravity;
-	public float maxGravity;
-	public float minGravity;
-	public float gravityDecayInterval;
+	public float decayRate = 5.0f;
+    private float nextDecay = 0.0f;
+	public float maxRadius = 150.0f;
+	public float minRadius = 50.0f;
+	public float currRadius = 150.0f;
+	public float radiusDecayInterval = 1.0f;
+	public float maxGravity = 60.0f;
+	public float minGravity = 10.0f;
+	public float currGravity = 60.0f;
+	public float gravityDecayInterval = 0.5f;
 
 
 	// Use this for initialization
 	void Start () {
-		decayRate = 5.0f;
-		nextDecay = 0.0f;
-		maxRadius = 150.0f;
-		minRadius = 50.0f;
-		currRadius = maxRadius;
-		radiusDecayInterval = 1.0f;
-		maxGravity = 60.0f;
-		minGravity = 10.0f;
-		currGravity = maxGravity;
-		gravityDecayInterval = 0.5f;
 
 	}
 	

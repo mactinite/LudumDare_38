@@ -139,7 +139,8 @@ public class CharacterMotor : MonoBehaviour
         if (collision.CompareTag("Explosion"))
         {
             Vector2 force = transform.position - collision.transform.position;
-            AddForce(force.normalized * (5000f));
+            Debug.Log(force.normalized * 1000f);
+            AddForce(transform.InverseTransformDirection(force.normalized) * 5000f);
         }
     }
 

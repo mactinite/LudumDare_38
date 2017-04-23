@@ -30,9 +30,19 @@ public class EventManager : MonoBehaviour {
 			float randDegrees = Random.Range (0.0f, 360.0f);
 			this.randoPos = this.getUnitOnCircle (randDegrees, this.planetManager.currRadius);
 			this.randomizeWaitTime ();
+            this.PlaceEvent(this.randoPos, this.randoEvent);
 		}
 			
 	}
+
+
+    public void PlaceEvent(Vector2 Position, Transform eventObj)
+    {
+
+        Transform obj = Instantiate(eventObj, Position, Quaternion.identity);
+        obj.GetComponent<CircularPhysics>().gravityCenter = transform;
+    }
+   
 
 	public Vector2 getUnitOnCircle(float angleDegrees, float radius) {
 		float x = 0.0f;
@@ -51,8 +61,8 @@ public class EventManager : MonoBehaviour {
 
 	public void randomizeWaitTime()
 	{
-		const float minimumWaitTime = 30.0f;
-		const float maximumWaitTime = 45.0f;
+		const float minimumWaitTime = 0.25f;
+		const float maximumWaitTime = 1f;
 		this.waitTime = Time.time + Random.Range(minimumWaitTime, maximumWaitTime);
 	}
 

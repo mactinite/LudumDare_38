@@ -29,32 +29,47 @@ public class CharacterMotor : MonoBehaviour {
 
 
     public Vector2 maxVelocity;
-    
+    public Vector2 leftPos;
+    public Vector2 rightPos;
+
+
 
     private Vector2 velocity;
+    private Quaternion facing;
+    private BoxCollider2D collider;
 
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody2D>();
+        collider = GetComponent<BoxCollider2D>();
+    }
+
+    private float jumpTimer;
+
+
+    private void Update()
+    {
 
     }
 
-    private float jumpTimer; 
+    private void LateUpdate()
+    {
+        Quaternion headingDelta = Quaternion.AngleAxis(acceleration.x, transform.up);
 
-	// Update is called once per frame
-	void FixedUpdate () {
+        
+    }
 
-        Gravity();
+    // Update is called once per frame
+    void FixedUpdate () {
+
         //reset acceleration every frame
         acceleration = Vector2.zero;
-
+        Vector2 planetNormal = transform.position - gravityPoint.position;
+        planetNormal.Normalize();
         acceleration.x = Input.GetAxis(HorizontalAxis) * walkSpeed;
-
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.FromToRotation(Vector3.up, transform.position - gravityPoint.position), Time.fixedDeltaTime * rotationDamping);
-        
-
-
-
+        Quaternion newRot = Quaternion.FromToRotation(transform.up, planetNormal) * transform.rotation;
+        transform.rotation = newRot;
+        Gravity();
         if (grounded)
         {
             jumping = false;
@@ -66,9 +81,9 @@ public class CharacterMotor : MonoBehaviour {
             jumping = true;
             acceleration.y = jumpSpeed;
         }
-        CalculateDrag();
+        
 
-        velocity += acceleration * Time.fixedDeltaTime;
+        velocity += acceleration * Time.deltaTime;
 
         if(velocity.x > maxVelocity.x)
         {
@@ -88,7 +103,7 @@ public class CharacterMotor : MonoBehaviour {
         {
             velocity.y = -maxVelocity.y;
         }
-
+        CalculateDrag();
 
         Debug.DrawRay(transform.position, transform.TransformDirection(velocity), Color.blue);
         rb.velocity =  (transform.TransformDirection(velocity));
@@ -101,38 +116,40 @@ public class CharacterMotor : MonoBehaviour {
 
     void Gravity()
     {
+        RaycastHit2D leftHit = Physics2D.Raycast(transform.TransformPoint((Vector3)leftPos), -transform.up, skinWidth, affectedBy);
+        RaycastHit2D rightHit = Physics2D.Raycast(transform.TransformPoint((Vector3)rightPos), -transform.up, skinWidth, affectedBy);
 
-        RaycastHit2D groundHit = Physics2D.Raycast(transform.position, -transform.up, 0.25f + skinWidth, affectedBy);
-       
-        if (groundHit)
+
+        if(leftHit)
         {
-            if (groundHit.collider.gameObject.CompareTag("World"))
-            {
-                grounded = true;
-                Debug.DrawRay(transform.position, -transform.up * (0.25f + skinWidth), Color.green);
-            }
-            else if (groundHit.collider.gameObject.CompareTag("Obstacle"))
-            {
-                grounded = true;
-                Debug.DrawRay(transform.position, -transform.up * (0.25f + skinWidth), Color.green);
-            }
-            else
-            {
-                Debug.DrawRay(transform.position, -transform.up * (0.25f + skinWidth), Color.red);
-                grounded = false;
-            }
+            grounded = true;
+            Debug.DrawRay(transform.TransformPoint((Vector3)leftPos), -transform.up * skinWidth, Color.green);
         }
         else
         {
-            Debug.DrawRay(transform.position, -transform.up * 0.25f, Color.red);
+            Debug.DrawRay(transform.TransformPoint((Vector3)leftPos), -transform.up * skinWidth, Color.red);
+        }
+
+        if (rightHit)
+        {
+            grounded = true;
+            Debug.DrawRay(transform.TransformPoint((Vector3)rightPos), -transform.up * skinWidth, Color.green);
+        }
+        else
+        {
+            Debug.DrawRay(transform.TransformPoint((Vector3)rightPos), -transform.up * skinWidth, Color.red);
+        }
+
+        if(!leftHit && !rightHit)
+        {
             grounded = false;
         }
 
-        //apply gravity if we are not touching the ground.
         if (!grounded)
-            velocity.y -= gravity * Time.deltaTime;
+            acceleration.y = -gravity;
         else
             velocity.y = 0;
+
     }
 
 
@@ -157,5 +174,11 @@ public class CharacterMotor : MonoBehaviour {
         vector.x = inVector.y;
         
         return vector.normalized;
+    }
+
+    void OnDrawGizmosSelected ()
+    {
+        Gizmos.DrawIcon(transform.TransformPoint((Vector3)leftPos), "leftPosition.png", true);
+        Gizmos.DrawIcon(transform.TransformPoint((Vector3)rightPos), "rightPosition.png", true);
     }
 }

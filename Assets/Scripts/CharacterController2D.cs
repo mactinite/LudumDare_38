@@ -125,7 +125,7 @@ public class CharacterController2D : MonoBehaviour {
 
     }
 
-    private void HandleVerticalSlope(ref Vector3 deltaMovement)
+    private void HandleVerticalSlope(ref Vector2 deltaMovement)
     {
         // slope check from the center of our collider
         var centerOfCollider = (leftRayPositions[0].x + rightRayPositions[0].x) * 0.5f;

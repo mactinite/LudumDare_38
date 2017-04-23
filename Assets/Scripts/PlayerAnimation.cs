@@ -46,12 +46,6 @@ public class PlayerAnimation : MonoBehaviour {
 
         anim.SetBool("Grounded", cc.isGrounded);
 
-
-        if (cc.isGrounded)
-            groundParticles.Play();
-        else
-            groundParticles.Stop();
-
         if (cm.jumping)
         {
             anim.SetBool("Jumping", true);
@@ -62,7 +56,13 @@ public class PlayerAnimation : MonoBehaviour {
             anim.SetBool("Jumping", false);
             anim.speed = 1;
         }
+        
 
+    }
+
+    public void EmitParticles()
+    {
+        groundParticles.Emit(25);
     }
 
 }

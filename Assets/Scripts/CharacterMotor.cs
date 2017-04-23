@@ -19,6 +19,7 @@ public class CharacterMotor : MonoBehaviour
     private RaycastHit2D _lastControllerColliderHit;
     public Vector2 velocity;
     private Vector2 acceleration;
+    private Vector2 hitForce;
     public Transform gravityPoint;
     public float rotationDamping = 10f;
     public float friction = 5;
@@ -30,6 +31,9 @@ public class CharacterMotor : MonoBehaviour
 
     public Vector2 maxVelocity;
     bool isMoving = false;
+
+    public bool dashing;
+    public float dashSpeed = 25f;
 
 
     void Awake()
@@ -47,6 +51,7 @@ public class CharacterMotor : MonoBehaviour
         {
             acceleration = Vector2.zero;
             velocity.y = 0;
+            dashing = false;
         }
         Vector2 planetNormal = transform.position - gravityPoint.position;
         planetNormal.Normalize();
@@ -68,6 +73,7 @@ public class CharacterMotor : MonoBehaviour
             velocity.y = maxVelocity.y;
         else if (velocity.y < -maxVelocity.y)
             velocity.y = -maxVelocity.y;
+
 
 
         // Friction and Drag
@@ -93,21 +99,48 @@ public class CharacterMotor : MonoBehaviour
             acceleration.y = Mathf.Sqrt(2f * jumpForce * gravity);
             jumping = true;
         }
-
         if (_controller.isGrounded)
         {
             velocity.y -= gravity * Time.deltaTime;
         }
-
-        
-
-
+        //HandleDash();
+        if (hitForce.x != 0)
+            acceleration.x += hitForce.x * Time.deltaTime;
+        if (hitForce.y != 0)
+            acceleration.y += hitForce.y * Time.deltaTime;
+        hitForce = Vector2.zero;
         float dampingSpeed = _controller.isGrounded ? groundDamping : inAirDamping;
         velocity.x = Mathf.Lerp(velocity.x, velocity.x + acceleration.x, Time.deltaTime * dampingSpeed);
         velocity.y += acceleration.y;
         
         _controller.Move((velocity * Time.deltaTime));
         velocity = _controller.velocity;
+    }
+
+
+    void HandleDash()
+    {
+        if (Input.GetButtonDown("Fire1") && !dashing)
+        {
+            dashing = true;
+            Vector2 dashForce = acceleration;
+            AddForce(dashForce * dashSpeed);                                                                                                                                                                             
+        }
+    }
+
+
+    public void AddForce(Vector2 forceVector)
+    {
+        hitForce = forceVector;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Explosion"))
+        {
+            Vector2 force = transform.position - collision.transform.position;
+            AddForce(force.normalized * (5000f));
+        }
     }
 
 }

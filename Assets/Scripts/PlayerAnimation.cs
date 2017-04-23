@@ -38,6 +38,7 @@ public class PlayerAnimation : MonoBehaviour {
             anim.SetBool("Running", false);
         }
 
+        anim.SetBool("Grounded", cc.isGrounded);
 
         if (cm.jumping)
         {

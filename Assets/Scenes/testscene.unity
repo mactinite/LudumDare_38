@@ -124,7 +124,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!58 &278702951
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -601,8 +601,8 @@ MonoBehaviour:
   jumpSpeed: 25
   friction: 25
   drag: 0.5
-  maxVelocity: {x: 20, y: 50}
-  minVelocity: {x: -20, y: -20}
+  maxVelocity: {x: 10, y: 50}
+  minVelocity: {x: -10, y: -20}
 --- !u!95 &1214867868
 Animator:
   serializedVersion: 3

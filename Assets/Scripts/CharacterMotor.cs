@@ -12,7 +12,6 @@ public class CharacterMotor : MonoBehaviour
 
     public bool grounded;
 
-    private Rigidbody2D rb;
     private Vector2 acceleration;
     private Vector2 velocity;
     public Transform gravityPoint;
@@ -40,14 +39,30 @@ public class CharacterMotor : MonoBehaviour
         Vector2 planetNormal = transform.position - gravityPoint.position;
         planetNormal.Normalize();
         acceleration.x = Input.GetAxis(HorizontalAxis) * walkSpeed;
+        if(Input.GetAxisRaw(HorizontalAxis) > 0f)
+        {
+            GetComponent<SpriteRenderer>().flipX = false;
+        }
+        else if(Input.GetAxisRaw(HorizontalAxis) < 0f)
+        {
+            GetComponent<SpriteRenderer>().flipX = true;
+        }
+
         Quaternion newRot = Quaternion.FromToRotation(transform.up, planetNormal) * transform.rotation;
         transform.rotation = newRot;
 
-        if(!cc.isGrounded)
         acceleration.y = -gravity;
 
-        transform.rotation = Quaternion.FromToRotation(-Vector3.up, gravityPoint.position - transform.position);
+        if(Input.GetButtonDown("Jump") && cc.isGrounded)
+        {
+            acceleration.y = jumpSpeed;
+            jumping = true;
+        }
 
+        if(jumping && cc.isGrounded)
+        {
+            jumping = false;
+        }
 
         cc.Move(acceleration * Time.deltaTime);
     }

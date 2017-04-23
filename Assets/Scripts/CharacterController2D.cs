@@ -16,7 +16,7 @@ public class CharacterController2D : MonoBehaviour {
     public float slopeLimit = 45.0f;
     public LayerMask platformMask;
     public Vector2 velocity;
-
+    public Vector2 movementDelta;
     public bool isGrounded = false;
 
     private Vector2[] downRayPositions;
@@ -28,7 +28,8 @@ public class CharacterController2D : MonoBehaviour {
     public float jumpThreshold = 0.07f;
     public AnimationCurve slopeSpeedMultiplier = new AnimationCurve(new Keyframe(-90f, 1.5f), new Keyframe(0f, 1f), new Keyframe(90f, 0f));
 
-    bool wasGroundedLastFrame, isGoingUpSlope, movingDownSlope;
+    bool wasGroundedLastFrame, isGoingUpSlope, movingDownSlope, becameGroundedThisFrame;
+    RaycastHit2D raycastHit;
 
 
     float slopeAngle;
@@ -77,28 +78,29 @@ public class CharacterController2D : MonoBehaviour {
 
     }
 
-    // Update is called once per frame
-    void FixedUpdate () {
-
-    }
-
     public void MoveVertically(ref Vector2 delta)
     {
         bool isMovingUp = delta.y > 0;
+        Debug.Log(isMovingUp);
         Vector2[] rayPositions = isMovingUp ? upRayPositions : downRayPositions;
         float rayDistance = Mathf.Abs(delta.y) + skinWidth;
         Vector2 rayDirection = isMovingUp ? transform.up : -transform.up;
 
+        
+
 
         foreach (Vector2 pos in rayPositions)
         {
-            Debug.DrawRay(transform.TransformPoint(pos), rayDirection * (rayDistance), Color.green);
-            RaycastHit2D hit = Physics2D.Raycast(transform.TransformPoint(pos), rayDirection, rayDistance, platformMask);
+            Vector2 rayPosition = transform.TransformPoint(pos);
+            rayPosition.x += delta.x;
+            Debug.DrawRay(rayPosition, rayDirection * (rayDistance), Color.green);
+            raycastHit = Physics2D.Raycast(transform.TransformPoint(pos), rayDirection, rayDistance, platformMask);
 
-            if (hit)
+            if (raycastHit)
             {
-
-                delta.y = hit.point.y - transform.TransformPoint(pos).y;
+                
+                delta.y = transform.InverseTransformPoint(raycastHit.point).y - pos.y;
+                Debug.Log("delta.y " + delta.y);
                 rayDistance = Mathf.Abs(delta.y);
 
 
@@ -118,6 +120,9 @@ public class CharacterController2D : MonoBehaviour {
                 isGrounded = false;
             }
 
+            if (!isMovingUp && delta.y > 0.00001f)
+                isGoingUpSlope = true;
+
             if (rayDistance < skinWidth + 0.001f)
                 break;
 
@@ -125,7 +130,7 @@ public class CharacterController2D : MonoBehaviour {
 
     }
 
-    private void HandleVerticalSlope(ref Vector2 deltaMovement)
+    private void HandleVerticalSlope(ref Vector2 delta)
     {
         // slope check from the center of our collider
         var centerOfCollider = (leftRayPositions[0].x + rightRayPositions[0].x) * 0.5f;
@@ -136,7 +141,7 @@ public class CharacterController2D : MonoBehaviour {
 
         var slopeRay = new Vector2(centerOfCollider, leftRayPositions[0].y);
         Debug.DrawRay(slopeRay, rayDirection * slopeCheckRayDistance, Color.yellow);
-        RaycastHit2D raycastHit = Physics2D.Raycast(slopeRay, rayDirection, slopeCheckRayDistance, platformMask);
+        raycastHit = Physics2D.Raycast(slopeRay, rayDirection, slopeCheckRayDistance, platformMask);
         if (raycastHit)
         {
             // bail out if we have no slope
@@ -145,14 +150,14 @@ public class CharacterController2D : MonoBehaviour {
                 return;
 
             // we are moving down the slope if our normal and movement direction are in the same x direction
-            var isMovingDownSlope = Mathf.Sign(raycastHit.normal.x) == Mathf.Sign(deltaMovement.x);
+            var isMovingDownSlope = Mathf.Sign(raycastHit.normal.x) == Mathf.Sign(delta.x);
             if (isMovingDownSlope)
             {
                 // going down we want to speed up in most cases so the slopeSpeedMultiplier curve should be > 1 for negative angles
                 var slopeModifier = slopeSpeedMultiplier.Evaluate(-angle);
                 // we add the extra downward movement here to ensure we "stick" to the surface below
-                deltaMovement.y += raycastHit.point.y - slopeRay.y - skinWidth;
-                deltaMovement.x *= slopeModifier;
+                delta.y += raycastHit.point.y - slopeRay.y - skinWidth;
+                delta.x *= slopeModifier;
                 movingDownSlope = true;
                 slopeAngle = angle;
             }
@@ -169,12 +174,12 @@ public class CharacterController2D : MonoBehaviour {
         foreach (Vector2 pos in rayPositions)
         {
 
-            RaycastHit2D hit = Physics2D.Raycast(transform.TransformPoint(pos), rayDirection, rayDistance, platformMask);      
+            raycastHit = Physics2D.Raycast(transform.TransformPoint(pos), rayDirection, rayDistance, platformMask);      
             Debug.DrawRay(transform.TransformPoint(pos), rayDirection * (rayDistance), Color.green);
 
-            if (hit)
+            if (raycastHit)
             {
-                delta.x = hit.point.x - transform.TransformPoint(pos).x;
+                delta.x = raycastHit.point.x - transform.TransformPoint(pos).x;
                 rayDistance = Mathf.Abs(delta.x);
 
 
@@ -223,7 +228,6 @@ public class CharacterController2D : MonoBehaviour {
                 // safety check. we fire a ray in the direction of movement just in case the diagonal we calculated above ends up
                 // going through a wall. if the ray hits, we back off the horizontal movement to stay in bounds.
                 Vector2 rayPosition = isGoingRight ? rightRayPositions[0] : leftRayPositions[0];
-                RaycastHit2D raycastHit;
                 raycastHit = Physics2D.Raycast(rayPosition, delta.normalized, delta.magnitude, platformMask);
 
                 if (raycastHit)
@@ -250,6 +254,8 @@ public class CharacterController2D : MonoBehaviour {
 
     public void Move( Vector2 delta)
 	{
+        movementDelta = delta;
+        
         wasGroundedLastFrame = isGrounded;
         UpdateRayPositions();
 
@@ -270,6 +276,12 @@ public class CharacterController2D : MonoBehaviour {
 		// only calculate velocity if we have a non-zero deltaTime
 		if( Time.deltaTime > 0f )
 			velocity = transform.InverseTransformDirection(delta) / Time.deltaTime;
-	}
+
+        if (!wasGroundedLastFrame && isGrounded)
+            becameGroundedThisFrame = true;
+
+        if (isGoingUpSlope)
+            velocity.y = 0;
+    }
 
 }

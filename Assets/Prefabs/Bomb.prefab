@@ -27,7 +27,7 @@ GameObject:
   - component: {fileID: 114149580162095812}
   m_Layer: 0
   m_Name: Bomb
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -125,6 +125,7 @@ MonoBehaviour:
   bombTime: 1
   explosion: {fileID: 4639923085975804, guid: 01b27aa0438a3654487d77f130854319, type: 2}
   exploded: 0
+  grabbed: 0
 --- !u!212 &212443189080905100
 SpriteRenderer:
   m_ObjectHideFlags: 1

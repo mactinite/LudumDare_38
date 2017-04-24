@@ -38,6 +38,7 @@ public class Grabber : MonoBehaviour {
                     grabbed = false;
                     pickedUp.GetComponent<Bomb>().grabbed = false;
                     pickedUp.GetComponent<Rigidbody2D>().velocity = (Vector2)transform.TransformPoint(GetComponent<CharacterController2D>().velocity);
+                    pickedUp.GetComponent<Collider2D>().isTrigger = false;
                     pickedUp = null;
                     
                 }
@@ -51,7 +52,7 @@ public class Grabber : MonoBehaviour {
         {
 
             pickedUp.transform.position = holdAbove.position;
-            
+            pickedUp.GetComponent<Collider2D>().isTrigger = true;
         }
 	}
 }

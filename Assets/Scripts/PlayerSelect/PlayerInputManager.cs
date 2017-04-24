@@ -15,6 +15,7 @@ public class PlayerInputManager : MonoBehaviour {
     public List<PlayerInputProfile> playerInfo = new List<PlayerInputProfile>();
 
     public Transform playerPrefab;
+    public Transform playerTrackerPrefab;
     public Color[] colorSet;
 
     public enum GameState
@@ -92,15 +93,20 @@ public class PlayerInputManager : MonoBehaviour {
         PlayerInputProfile profile = playerInfo[playerIndex];
         Vector2 playerPosition = GetPointUnitOnCircle(Random.Range(0, 360), 5);
         Transform player = Instantiate(playerPrefab, playerPosition, Quaternion.identity);
+        Transform tracker = Instantiate(playerTrackerPrefab, playerPosition, Quaternion.identity);
+        PlayerTracker pt = tracker.GetComponent<PlayerTracker>();
         CharacterMotor cm = player.GetComponent<CharacterMotor>();
         SpriteRenderer sr = player.GetComponent<SpriteRenderer>();
         cm.HorizontalAxis = profile.HorizontalAxis;
         cm.JumpButtonName = profile.JumpButton;
         cm.gravityPoint = GameObject.FindGameObjectWithTag("World").transform;
-
         player.GetComponent<Grabber>().throwButton = profile.AttackButton;
         //TODO: add other inputs here
         sr.color = colorSet[profile.JoyNumber];
+
+        pt.player = player;
+        pt.playerNumber = profile.JoyNumber + 1;
+        pt.trackerColor = sr.color;
     }
 
 

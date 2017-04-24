@@ -1092,6 +1092,8 @@ MonoBehaviour:
   playerInfo: []
   playerPrefab: {fileID: 4583267481234978, guid: e0a855d11e9b5e14b867be5a59e82ed3,
     type: 2}
+  playerTrackerPrefab: {fileID: 4279749194580838, guid: cd547aaabb255ca47bc118d8a92f335d,
+    type: 2}
   colorSet:
   - {r: 1, g: 0, b: 0, a: 1}
   - {r: 0, g: 1, b: 0.13103461, a: 1}

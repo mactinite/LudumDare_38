@@ -21,7 +21,6 @@ public class CharacterMotor : MonoBehaviour
 
 
     private CharacterController2D _controller;
-    private Animator _animator;
     public Vector2 velocity;
     private Vector2 acceleration;
     private Vector2 hitForce;
@@ -29,12 +28,9 @@ public class CharacterMotor : MonoBehaviour
     public float rotationDamping = 10f;
     public float friction = 5;
 
-
-
     public bool jumping;
 
     public Vector2 maxVelocity;
-    bool isMoving = false;
 
     public bool dashing;
     public float dashSpeed = 25f;
@@ -42,7 +38,6 @@ public class CharacterMotor : MonoBehaviour
 
     void Awake()
     {
-        _animator = GetComponent<Animator>();
         _controller = GetComponent<CharacterController2D>();
     }
 

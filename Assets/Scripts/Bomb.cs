@@ -7,23 +7,33 @@ public class Bomb : MonoBehaviour {
     public float bombTime = 1f;
     public Transform explosion;
     public bool exploded;
+    public bool grabbed;
     private float timer = 0f;
+    public bool lit = false;
+
 	// Use this for initialization
 	void Start () {
-		
+        grabbed = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if(timer > bombTime && !exploded)
+        if(grabbed == false && lit)
         {
-            Explode();
+            if (timer > bombTime && !exploded)
+            {
+                Explode();
+            }
+
+            timer += Time.deltaTime;
+        } else
+        {
+            timer = 0;
         }
 
-        timer += Time.deltaTime;
 	}
 
-    void Explode()
+    public void Explode()
     {
 
         Instantiate(explosion,transform.position,Quaternion.identity);

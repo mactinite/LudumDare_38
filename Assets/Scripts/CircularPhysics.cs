@@ -23,8 +23,15 @@ public class CircularPhysics : MonoBehaviour {
 
     void Physics()
     {
-        if(gravityOn)
-            rb.velocity = gravityCenter.position - transform.position * gravitySpeed * Time.deltaTime;
+        if (gravityOn)
+        {
+            Vector2 acc = gravityCenter.position - transform.position * gravitySpeed * Time.deltaTime;
+            Vector2 vel = rb.velocity;
+            vel.x += acc.x;
+            vel.y += acc.y;
+
+            rb.velocity = vel;
+        }
     }
 
 }

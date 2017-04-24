@@ -27,7 +27,7 @@ GameObject:
   - component: {fileID: 114149580162095812}
   m_Layer: 0
   m_Name: Bomb
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -108,7 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f890fc59e3298848ace1bf425d97668, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravitySpeed: 50
+  gravitySpeed: 5
   gravityCenter: {fileID: 0}
   gravityOn: 1
 --- !u!114 &114149580162095812
@@ -125,6 +125,8 @@ MonoBehaviour:
   bombTime: 1
   explosion: {fileID: 4639923085975804, guid: 01b27aa0438a3654487d77f130854319, type: 2}
   exploded: 0
+  grabbed: 0
+  lit: 0
 --- !u!212 &212443189080905100
 SpriteRenderer:
   m_ObjectHideFlags: 1

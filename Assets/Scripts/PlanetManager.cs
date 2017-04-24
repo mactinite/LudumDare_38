@@ -15,6 +15,8 @@ public class PlanetManager : MonoBehaviour {
 	public float currGravity = 60.0f;
 	public float gravityDecayInterval = 0.5f;
 
+    public float killRadius = 10f;
+
 
 	// Use this for initialization
 	void Start () {
@@ -34,7 +36,12 @@ public class PlanetManager : MonoBehaviour {
 		}
 	}
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.position, killRadius);
+    }
 
-		
+
+
 
 }

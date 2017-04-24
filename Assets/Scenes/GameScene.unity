@@ -193,6 +193,7 @@ MonoBehaviour:
   minGravity: 0
   currGravity: 0
   gravityDecayInterval: 0
+  killRadius: 10.9
 --- !u!114 &4965986
 MonoBehaviour:
   m_ObjectHideFlags: 0

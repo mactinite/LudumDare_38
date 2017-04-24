@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class CharacterMotor : MonoBehaviour
 {
+
+    [Header("Player Setup")]
+    public int playerNum = 0;
+    public string HorizontalAxis = "Horizontal";
+    public string VerticalAxis = "Vertical";
+    public string JumpButtonName = "Jump";
+
     // movement config
     public float gravity = -25f;
     public float runSpeed = 8f;
@@ -11,12 +18,10 @@ public class CharacterMotor : MonoBehaviour
     public float inAirDamping = 5f;
     public float jumpForce = 3f;
 
-    [HideInInspector]
-    private float normalizedHorizontalSpeed = 0;
+
 
     private CharacterController2D _controller;
     private Animator _animator;
-    private RaycastHit2D _lastControllerColliderHit;
     public Vector2 velocity;
     private Vector2 acceleration;
     private Vector2 hitForce;
@@ -25,8 +30,7 @@ public class CharacterMotor : MonoBehaviour
     public float friction = 5;
 
 
-    public string HorizontalAxis = "Horizontal";
-    public string VerticalAxis = "Vertical";
+
     public bool jumping;
 
     public Vector2 maxVelocity;
@@ -61,19 +65,20 @@ public class CharacterMotor : MonoBehaviour
 
 
         acceleration.x = Input.GetAxisRaw(HorizontalAxis) * runSpeed;
-        
 
 
-        if (velocity.x > maxVelocity.x)
-            velocity.x = maxVelocity.x;
-        else if (velocity.x < -maxVelocity.x)
-            velocity.x = -maxVelocity.x;
+        if (!dashing)
+        {
+            if (velocity.x > maxVelocity.x)
+                velocity.x = maxVelocity.x;
+            else if (velocity.x < -maxVelocity.x)
+                velocity.x = -maxVelocity.x;
 
-        if (velocity.y > maxVelocity.y)
-            velocity.y = maxVelocity.y;
-        else if (velocity.y < -maxVelocity.y)
-            velocity.y = -maxVelocity.y;
-
+            if (velocity.y > maxVelocity.y)
+                velocity.y = maxVelocity.y;
+            else if (velocity.y < -maxVelocity.y)
+                velocity.y = -maxVelocity.y;
+        }
 
 
         // Friction and Drag
@@ -94,7 +99,7 @@ public class CharacterMotor : MonoBehaviour
 
         acceleration.y -= gravity * Time.deltaTime;
 
-        if (Input.GetButton("Jump") && _controller.isGrounded && !jumping)
+        if (Input.GetButton(JumpButtonName) && _controller.isGrounded && !jumping)
         {
             acceleration.y = Mathf.Sqrt(2f * jumpForce * gravity);
             jumping = true;
@@ -103,11 +108,12 @@ public class CharacterMotor : MonoBehaviour
         {
             velocity.y -= gravity * Time.deltaTime;
         }
-        //HandleDash();
+        HandleDash();
         if (hitForce.x != 0)
             acceleration.x += hitForce.x * Time.deltaTime;
         if (hitForce.y != 0)
             acceleration.y += hitForce.y * Time.deltaTime;
+        
         hitForce = Vector2.zero;
         float dampingSpeed = _controller.isGrounded ? groundDamping : inAirDamping;
         velocity.x = Mathf.Lerp(velocity.x, velocity.x + acceleration.x, Time.deltaTime * dampingSpeed);
@@ -123,8 +129,7 @@ public class CharacterMotor : MonoBehaviour
         if (Input.GetButtonDown("Fire1") && !dashing)
         {
             dashing = true;
-            Vector2 dashForce = acceleration;
-            AddForce(dashForce * dashSpeed);                                                                                                                                                                             
+            bool facingRight = !GetComponent<SpriteRenderer>().flipX;                                                                                                                                                                    
         }
     }
 
@@ -139,8 +144,7 @@ public class CharacterMotor : MonoBehaviour
         if (collision.CompareTag("Explosion"))
         {
             Vector2 force = transform.position - collision.transform.position;
-            Debug.Log(force.normalized * 1000f);
-            AddForce(transform.InverseTransformDirection(force.normalized) * 5000f);
+            AddForce(transform.InverseTransformDirection(force.normalized) * 2500f);
         }
     }
 

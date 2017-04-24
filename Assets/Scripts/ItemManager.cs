@@ -10,8 +10,11 @@ public class ItemManager : MonoBehaviour{
 	public PlanetManager planetManager;
 	private Vector2 randPos;
 
-	// Use this for initialization
-	void Start () {
+    public float minimumWaitTime = 15.0f;
+    public float maximumWaitTime = 30.0f;
+
+    // Use this for initialization
+    void Start () {
 		
 		this.planetManager = GetComponent<PlanetManager> ();
 		this.randomizeWaitTime ();
@@ -27,12 +30,22 @@ public class ItemManager : MonoBehaviour{
 			}
 			float randDegrees = Random.Range (0.0f, 360.0f);
 			this.randPos =  this.getUnitOnCircle (randDegrees, this.planetManager.currRadius);
-			this.randomizeWaitTime ();
-
+            this.PlaceItem(this.randPos, this.randoItem);
+            this.randomizeWaitTime ();
+            
 		}
 	}
 
-	public Vector2 getUnitOnCircle(float angleDegrees, float radius) {
+
+
+    public void PlaceItem(Vector2 Position, Transform itemObj)
+    {
+
+        Transform obj = Instantiate(itemObj, Position, Quaternion.identity);
+        obj.GetComponent<CircularPhysics>().gravityCenter = transform;
+    }
+
+    public Vector2 getUnitOnCircle(float angleDegrees, float radius) {
 		float x = 0.0f;
 		float y = 0.0f;
 		float angleRadians = 0.0f;
@@ -49,8 +62,8 @@ public class ItemManager : MonoBehaviour{
 
 	public void randomizeWaitTime()
 	{
-		const float minimumWaitTime = 15.0f;
-		const float maximumWaitTime = 30.0f;
+		
+		
 		this.waitTime = Time.time + Random.Range(minimumWaitTime, maximumWaitTime);
 	}
 		

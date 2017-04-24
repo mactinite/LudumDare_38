@@ -9,6 +9,8 @@ public class Bomb : MonoBehaviour {
     public bool exploded;
     public bool grabbed;
     private float timer = 0f;
+    public bool lit = false;
+
 	// Use this for initialization
 	void Start () {
         grabbed = false;
@@ -16,7 +18,7 @@ public class Bomb : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if(grabbed == false)
+        if(grabbed == false && lit)
         {
             if (timer > bombTime && !exploded)
             {

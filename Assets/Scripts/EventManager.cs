@@ -12,6 +12,9 @@ public class EventManager : MonoBehaviour {
 	private Vector2 randoPos;
 	public PlanetManager planetManager;
 
+    public float minWaitTime = 5f;
+    public float maxWaitTime = 7f;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -61,9 +64,7 @@ public class EventManager : MonoBehaviour {
 
 	public void randomizeWaitTime()
 	{
-		const float minimumWaitTime = 0.25f;
-		const float maximumWaitTime = 1f;
-		this.waitTime = Time.time + Random.Range(minimumWaitTime, maximumWaitTime);
+		this.waitTime = Time.time + Random.Range(minWaitTime, maxWaitTime);
 	}
 
 

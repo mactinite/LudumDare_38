@@ -6,6 +6,7 @@ public class Grabber : MonoBehaviour {
 
     public Transform holdAbove;
     private GameObject pickedUp;
+    public string throwButton = "Attack";
     public bool grabbed;
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -14,17 +15,21 @@ public class Grabber : MonoBehaviour {
         {
             if (collision.gameObject.tag == "Item")
             {
-                grabbed = true;
-                collision.gameObject.transform.position = holdAbove.position;
-                pickedUp = collision.gameObject;
-                pickedUp.GetComponent<Bomb>().grabbed = true;
+                if (!collision.GetComponent<Bomb>().lit)
+                {
+                    grabbed = true;
+                    collision.GetComponent<Bomb>().lit = true;
+                    collision.gameObject.transform.position = holdAbove.position;
+                    pickedUp = collision.gameObject;
+                    pickedUp.GetComponent<Bomb>().grabbed = true;
+                }
             }
         }
 
     }
     // Update is called once per frame
     void Update () {
-        if(Input.GetKeyDown(KeyCode.B))
+        if(Input.GetButtonDown(throwButton))
         {
             if (pickedUp != null)
             {
@@ -32,6 +37,7 @@ public class Grabber : MonoBehaviour {
                 {
                     grabbed = false;
                     pickedUp.GetComponent<Bomb>().grabbed = false;
+                    pickedUp.GetComponent<Rigidbody2D>().velocity = (Vector2)transform.TransformPoint(GetComponent<CharacterController2D>().velocity);
                     pickedUp = null;
                     
                 }

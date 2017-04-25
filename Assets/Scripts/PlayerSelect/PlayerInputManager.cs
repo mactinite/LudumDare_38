@@ -77,7 +77,14 @@ public class PlayerInputManager : MonoBehaviour
         winnerSelected = true;
         //Pass player number to UI element
         GameObject winningPlayer = GameObject.FindGameObjectWithTag("Player");
-        winText.text = "Player " + (playerInfo[winningPlayer.GetComponent<CharacterMotor>().playerNum].JoyNumber+1) + "wins!" ;
+        if (winningPlayer != null)
+        {
+            winText.text = "Player " + (playerInfo[winningPlayer.GetComponent<CharacterMotor>().playerNum].JoyNumber + 1) + "wins!";
+        }
+        else
+        {
+            winText.text = "It was a tie!";
+        }
         //Show UI Element
         winText.transform.parent.gameObject.SetActive(true);
         yield return new WaitForSeconds(2f);

@@ -10,16 +10,24 @@ public class Bomb : MonoBehaviour {
     public bool grabbed;
     private float timer = 0f;
     public bool lit = false;
+    private Animator anim;
+
+    public ParticleSystem litParticles;
 
 	// Use this for initialization
 	void Start () {
         grabbed = false;
+        anim = GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        anim.SetBool("Lit", lit);
+
         if(grabbed == false && lit)
         {
+            litParticles.gameObject.SetActive(true);
             if (timer > bombTime && !exploded)
             {
                 Explode();

@@ -15,10 +15,10 @@ public class Grabber : MonoBehaviour {
         {
             if (collision.gameObject.tag == "Item")
             {
-                if (!collision.GetComponent<Bomb>().lit)
+                if (!collision.GetComponent<Bomb>().lit && !collision.GetComponent<Bomb>().grabbed)
                 {
                     grabbed = true;
-                    collision.GetComponent<Bomb>().lit = true;
+                    
                     collision.gameObject.transform.position = holdAbove.position;
                     pickedUp = collision.gameObject;
                     pickedUp.GetComponent<Bomb>().grabbed = true;
@@ -35,12 +35,14 @@ public class Grabber : MonoBehaviour {
             {
                 if (pickedUp.tag == "Item")
                 {
-                    grabbed = false;
+                    
                     pickedUp.GetComponent<Bomb>().grabbed = false;
+                    pickedUp.GetComponent<Bomb>().lit = true;
                     pickedUp.GetComponent<Rigidbody2D>().velocity = (Vector2)transform.TransformPoint(GetComponent<CharacterController2D>().velocity);
                     pickedUp.GetComponent<Collider2D>().isTrigger = false;
                     pickedUp = null;
-                    
+                    grabbed = false;
+
                 }
                 else
                 {

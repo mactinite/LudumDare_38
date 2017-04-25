@@ -15,7 +15,7 @@ public class Grabber : MonoBehaviour {
         {
             if (collision.gameObject.tag == "Item")
             {
-                if (!collision.GetComponent<Bomb>().lit)
+                if (!collision.GetComponent<Bomb>().lit && !collision.GetComponent<Bomb>().grabbed)
                 {
                     grabbed = true;
                     

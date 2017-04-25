@@ -12,6 +12,8 @@ public class Bomb : MonoBehaviour {
     public bool lit = false;
     private Animator anim;
 
+    public ParticleSystem litParticles;
+
 	// Use this for initialization
 	void Start () {
         grabbed = false;
@@ -25,6 +27,7 @@ public class Bomb : MonoBehaviour {
 
         if(grabbed == false && lit)
         {
+            litParticles.gameObject.SetActive(true);
             if (timer > bombTime && !exploded)
             {
                 Explode();

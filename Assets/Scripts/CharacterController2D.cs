@@ -33,7 +33,7 @@ public class CharacterController2D : MonoBehaviour {
 
 
     float slopeAngle;
-    float slopeLimitTangent = Mathf.Tan(75f * Mathf.Deg2Rad);
+    public float slopeLimitTangent = Mathf.Tan(75f * Mathf.Deg2Rad);
 
     // Use this for initialization
     void Start () {
@@ -81,6 +81,8 @@ public class CharacterController2D : MonoBehaviour {
     public void MoveVertically(ref Vector2 delta)
     {
         bool isMovingUp = delta.y > 0;
+        if (isMovingUp)
+            Debug.Log("Moving Up");
         Vector2[] rayPositions = isMovingUp ? upRayPositions : downRayPositions;
         float rayDistance = Mathf.Abs(delta.y) + skinWidth;
         Vector2 rayDirection = isMovingUp ? transform.up : -transform.up;
@@ -96,9 +98,8 @@ public class CharacterController2D : MonoBehaviour {
             raycastHit = Physics2D.Raycast(transform.TransformPoint(pos), rayDirection, rayDistance, platformMask);
 
             if (raycastHit)
-            {
-                
-                delta.y = transform.InverseTransformPoint(raycastHit.point).y - pos.y;
+            { 
+                delta.y = -Mathf.Abs(Vector2.Distance(raycastHit.point, transform.TransformPoint(pos)));
 
                 if (isMovingUp)
                 {
@@ -138,16 +139,18 @@ public class CharacterController2D : MonoBehaviour {
         var slopeRay = new Vector2(centerOfCollider, leftRayPositions[0].y);
         slopeRay = transform.TransformPoint(slopeRay);
         Debug.DrawRay(slopeRay, rayDirection * slopeCheckRayDistance, Color.yellow);
+
         raycastHit = Physics2D.Raycast(slopeRay, rayDirection, slopeCheckRayDistance, platformMask);
         if (raycastHit)
         {
             // bail out if we have no slope
-            var angle = Vector2.Angle(raycastHit.normal, transform.up);
+            var angle = Vector2.Angle(transform.TransformDirection(raycastHit.normal), transform.TransformDirection(transform.up));
+            Debug.Log("Floor Angle "+angle);
             if (angle == 0)
                 return;
 
             // we are moving down the slope if our normal and movement direction are in the same x direction
-            var isMovingDownSlope = Mathf.Sign(raycastHit.normal.x) == Mathf.Sign(delta.x);
+            var isMovingDownSlope = Mathf.Sign(raycastHit.normal.x) == Mathf.Sign(transform.InverseTransformDirection(delta).x);
             if (isMovingDownSlope)
             {
                 // going down we want to speed up in most cases so the slopeSpeedMultiplier curve should be > 1 for negative angles
@@ -165,6 +168,7 @@ public class CharacterController2D : MonoBehaviour {
     {
 
         bool isMovingRight = delta.x > 0;
+        Debug.Log(isMovingRight);
         Vector2[] rayPositions = isMovingRight ? rightRayPositions : leftRayPositions;
         float rayDistance = Mathf.Abs(delta.x) + skinWidth;
         Vector2 rayDirection = isMovingRight ? transform.right : -transform.right;
@@ -173,12 +177,12 @@ public class CharacterController2D : MonoBehaviour {
         {
             
             raycastHit = Physics2D.Raycast(transform.TransformPoint(pos), rayDirection, rayDistance, platformMask);      
-            Debug.DrawRay(transform.TransformPoint(pos), rayDirection * (rayDistance), Color.green);
+            Debug.DrawRay(transform.TransformPoint(pos), rayDirection * (rayDistance), isMovingRight ? Color.green : Color.yellow);
 
             if (raycastHit)
             {
-
-                if (i == 0 && HandleHorizontalSlope(ref delta, Vector2.Angle(raycastHit.normal, transform.up)))
+                ;
+                if (i == 0 && HandleHorizontalSlope(ref delta, Vector2.Angle(transform.TransformDirection(raycastHit.normal), transform.TransformDirection(transform.up))))
                 {
                     
                     break;
@@ -210,11 +214,13 @@ public class CharacterController2D : MonoBehaviour {
 
     bool HandleHorizontalSlope(ref Vector2 delta, float angle)
     {
+
+        var isMovingRight = delta.x > 0;
+
+        Debug.Log("Horizontal Angle " + angle);
         // disregard 90 degree angles (walls)
         if (Mathf.RoundToInt(angle) == 90)
             return false;
-
-        Debug.Log(angle);
 
         // if we can walk on slopes and our angle is small enough we need to move up
         if (angle < slopeLimit)
@@ -238,7 +244,7 @@ public class CharacterController2D : MonoBehaviour {
                 Vector2 rayPosition = isGoingRight ? rightRayPositions[0] : leftRayPositions[0];
                 rayPosition = transform.TransformPoint(rayPosition);
                 raycastHit = Physics2D.Raycast(rayPosition, delta.normalized, delta.magnitude, platformMask);
-                Debug.DrawRay(rayPosition, delta.normalized * (delta.magnitude), Color.blue);
+                Debug.DrawRay(rayPosition, delta.normalized * (delta.magnitude), isMovingRight ? Color.cyan : Color.black);
                 if (raycastHit)
                 {
                     // we crossed an edge when using Pythagoras calculation, so we set the actual delta movement to the ray hit location
@@ -266,7 +272,7 @@ public class CharacterController2D : MonoBehaviour {
     {
 
         Vector2[] rayPositions = downRayPositions;
-        float rayDistance = skinWidth;
+        float rayDistance = skinWidth ;
         Vector2 rayDirection = -transform.up;
 
         foreach (Vector2 pos in rayPositions)
@@ -298,9 +304,11 @@ public class CharacterController2D : MonoBehaviour {
         wasGroundedLastFrame = isGrounded;
         isGrounded = false;
         becameGroundedThisFrame = false;
+        isGoingUpSlope = false;
+        movingDownSlope = false;
         UpdateRayPositions();
 
-        CheckGround(ref delta);
+        //CheckGround(ref delta);
 
         if (delta.y < 0f && wasGroundedLastFrame)
             HandleVerticalSlope(ref delta);
@@ -312,8 +320,6 @@ public class CharacterController2D : MonoBehaviour {
 		// next, check movement in the vertical dir
 		if(delta.y != 0f )
             MoveVertically( ref delta);
-
-        
 
 		// move then update our state
 		transform.Translate(delta);

@@ -181,20 +181,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNum: 0
-  HorizontalAxis: Horizontal_0
-  VerticalAxis: Vertical_0
-  JumpButtonName: Jump_0
+  HorizontalAxis: Horizontal
+  VerticalAxis: Vertical
+  JumpButtonName: Jump
   gravity: 25
   runSpeed: 5
-  groundDamping: 10
-  inAirDamping: 5
-  jumpForce: 1
+  groundDamping: 7
+  inAirDamping: 7
+  jumpForce: 1.5
   velocity: {x: 0, y: 0}
   gravityPoint: {fileID: 0}
   rotationDamping: 75
   friction: 20
   jumping: 0
-  maxVelocity: {x: 5, y: 10}
+  maxVelocity: {x: 7, y: 100}
   dashing: 0
   dashSpeed: 5000
 --- !u!114 &114182224572340204
@@ -238,23 +238,17 @@ MonoBehaviour:
   verticalRays: 3
   horizontalRays: 4
   skinWidth: 0.03
-  slopeLimit: 10
+  slopeLimit: 40
   platformMask:
     serializedVersion: 2
     m_Bits: 4294967290
   velocity: {x: 0, y: 0}
-  movementDelta: {x: 0, y: 0}
-  isGrounded: 0
+  movementDelta: {x: 0, y: -0.0068613957}
+  isGrounded: 1
   jumpThreshold: 0.07
   slopeSpeedMultiplier:
     serializedVersion: 2
     m_Curve:
-    - serializedVersion: 2
-      time: -90
-      value: 1.5
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
     - serializedVersion: 2
       time: 0
       value: 1
@@ -262,14 +256,15 @@ MonoBehaviour:
       outSlope: 0
       tangentMode: 0
     - serializedVersion: 2
-      time: 90
-      value: 0
+      time: 1
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
+  slopeLimitTangent: 3.7320504
 --- !u!198 &198562663303697396
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -325,7 +320,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 1418357249
+  randomSeed: -290150241
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -3285,7 +3280,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300008, guid: 309d96b0cef32214d8d175fc78bc15c4, type: 3}
+  m_Sprite: {fileID: 21300002, guid: 309d96b0cef32214d8d175fc78bc15c4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

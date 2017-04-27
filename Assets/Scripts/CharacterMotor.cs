@@ -92,17 +92,14 @@ public class CharacterMotor : MonoBehaviour
             jumping = false;
         }
 
-        acceleration.y -= gravity * Time.deltaTime;
+        acceleration.y = -gravity * Time.deltaTime;
 
         if (Input.GetButton(JumpButtonName) && _controller.isGrounded && !jumping)
         {
-            acceleration.y = Mathf.Sqrt(2f * jumpForce * gravity);
+            acceleration.y = Mathf.Sqrt(2f * jumpForce * gravity); ;
             jumping = true;
         }
-        if (_controller.isGrounded)
-        {
-            velocity.y -= gravity * Time.deltaTime;
-        }
+
         HandleDash();
         if (hitForce.x != 0)
             acceleration.x += hitForce.x * Time.deltaTime;
